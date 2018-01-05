@@ -704,7 +704,7 @@ function esignature_file_uris_to_urls( $str, &$stored_uris ){
     print_r( $file_uris );
     print_r( $file_urls );
     // Renew the file path
-    $str = strtr( $str, $file_uris, $file_urls );
+    $str = strtr( $str, $file_urls );
     print_r( $str );
   }
   return $str;
