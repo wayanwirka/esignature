@@ -1,0 +1,13 @@
+; $Id: lm_paypal_subscriptions.info,v 1.1.2.1 2009/04/17 00:33:48 lyricnz Exp $
+name = "E-Signature"
+description = "Provides a e-signature generator."
+package = "Custom Modules"
+core = 7.x
+
+
+; Information added by drupal.org packaging script on 2011-12-20
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "Custom Modules"
+datestamp = "1324383218"
+

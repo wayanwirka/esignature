@@ -1,0 +1,714 @@
+<?php
+
+define('ESIGNATURE_TEMPLATE_DIRECTORY', 'sites/default/templates/');
+
+
+/**
+ * Implements hook_permission().
+ */
+function esignature_permission() {
+  return array(
+    'access e-signature generator' => array(
+      'title' => t('Access e-signature generator'),
+      'description' => t('Access e-signature generator.'),
+    ),
+    'access e-signature settings' => array(
+      'title' => t('Access e-signature settings'),
+      'description' => t('Access e-signature settings.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_perm().
+ */
+function esignature_theme() {
+  return array(
+    'esignature_set_division' => array(
+		'template' => 'esdivision',
+		'file' => 'esignature.theme.inc',
+    ),
+    'esignature_set_item' => array(
+		'arguments' => array($arg = array()),
+		'file' => 'esignature.theme.inc',
+    )
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function esignature_menu() {
+  $items = array();
+
+  $items['admin/esignature'] = array(
+    'title' => 'E-Signature Generator',
+    'description' => 'E-Signature Generator.',
+    'page callback' => 'esignature_callback',
+    'access arguments' => array('access e-signature generator'),
+    'weight' => 1,
+  );
+  
+  $items['admin/esignature/generator'] = array(
+    'title' => 'Apply Template',
+    'page callback' => 'esignature_generator_callback',
+    'access arguments' => array('access e-signature generator'),
+    'weight' => 1,
+  );
+  
+  $items['admin/esignature/generator/item'] = array(
+    'title' => 'Apply One Field Into Template',
+    'page callback' => 'esignature_generator_item_callback',
+    'access arguments' => array('access e-signature generator'),
+    'weight' => 1,
+  );
+  
+  $items['admin/esignature/generator/item_ref'] = array(
+    'title' => 'Apply One Field Ref Into Template',
+    'page callback' => 'esignature_generator_item_ref_callback',
+    'access arguments' => array('access e-signature generator'),
+    'weight' => 1,
+  );
+  
+  $items['admin/esignature/generator/download/%/%'] = array(
+    'title' => 'Download e-Signature Zip File',
+    'page callback' => 'esignature_generator_download_callback',
+	'page arguments' => array(4, 5),
+    'access arguments' => array('access e-signature generator'),
+    'weight' => 1,
+	'file' => 'esignature.download.inc'
+  );
+  
+  
+  //settings  
+  $items['admin/esignature/settings/templates'] = array(
+    'title' => 'Templates',
+    'page callback' => 'esignature_templates_callback',
+    'access arguments' => array('access e-signature settings'),
+	'file' => 'esignature.admin.inc',
+  );  
+  $items['admin/esignature/settings/templates/main'] = array(
+    'title' => 'Templates',
+	'type' => MENU_DEFAULT_LOCAL_TASK,
+  );  
+  $items['admin/esignature/settings/templates/address'] = array(
+    'title' => 'Address',
+    'page callback' => 'esignature_templates_address_callback',
+    'access arguments' => array('access e-signature settings'),
+    'weight' => 1,
+	'file' => 'esignature.admin.inc',
+	'type' => MENU_LOCAL_TASK,
+  );
+  $items['admin/esignature/settings/templates/website'] = array(
+    'title' => 'Websites',
+    'page callback' => 'esignature_templates_website_callback',
+    'access arguments' => array('access e-signature settings'),
+    'weight' => 2,
+	'file' => 'esignature.admin.inc',
+	'type' => MENU_LOCAL_TASK,
+  );
+  $items['admin/esignature/settings/templates/main_image'] = array(
+    'title' => 'Main Images',
+    'page callback' => 'esignature_templates_main_image_callback',
+    'access arguments' => array('access e-signature settings'),
+    'weight' => 2,
+	'file' => 'esignature.admin.inc',
+	'type' => MENU_LOCAL_TASK,
+  );
+  $items['admin/esignature/settings/templates/bottom_logo'] = array(
+    'title' => 'Bottom Logo',
+    'page callback' => 'esignature_templates_bottom_logo_callback',
+    'access arguments' => array('access e-signature settings'),
+    'weight' => 2,
+	'file' => 'esignature.admin.inc',
+	'type' => MENU_LOCAL_TASK,
+  );
+  
+  
+  //403 page
+  $items['forbidden'] = array(
+    'title' => 'Please Login or Register',
+    'page callback' => 'esignature_forbidden_callback',
+    'access arguments' => array('access content')
+  );
+
+  
+  //image uploader
+  $items['node/%/signature/images'] = array(
+    'title' => 'Upload Image for Template',
+    'page callback' => 'esignature_signature_image_callback',
+    'page arguments' => array(1),
+    'access arguments' => array('access e-signature generator'),
+    'weight' => 2,
+	'file' => 'esignature.admin.inc',
+  );
+  
+  $items['node/%/signature/images/upload'] = array(
+    'title' => 'Upload Image Template',
+    'page callback' => 'esignature_signature_image_upload_callback',
+    'page arguments' => array(1),
+    'access arguments' => array('access e-signature generator'),
+    'weight' => 2,
+	'file' => 'esignature.admin.inc',
+  );
+  
+  $items['node/%/signature/images/delete/%'] = array(
+    'title' => 'Delete Image',
+    'page callback' => 'esignature_signature_image_delete_callback',
+    'page arguments' => array(1, 5),
+    'access arguments' => array('access e-signature generator'),
+    'weight' => 2,
+	'file' => 'esignature.admin.inc',
+  );
+  
+  return $items;
+}
+
+{
+	function esignature_forbidden_callback(){
+		return 'Please login to access this page.';
+	}
+
+	function esignature_callback(){
+		return theme('esignature_set_division');
+	}
+
+	function esignature_generator_callback(){
+
+		//check cache
+		$fname_cache = $_REQUEST['cache_id'];
+		if(! isset($_SESSION[$fname_cache])){
+			$res['result'] = FALSE;
+			$res['msg'] = 'This form has been expired. Please reload the page.';
+			drupal_json_output($res);
+			exit;
+		}else{	
+			$output = theme('esignature_set_division');
+			$res['result'] = TRUE;
+			$res['output'] = $output;
+			$res['template'] = unserialize($_SESSION[$fname_cache]);
+			drupal_json_output($res);
+			exit;
+		}
+	}
+
+	function esignature_generator_item_callback(){
+		//check cache
+		$fname_cache = $_REQUEST['cache_id'];
+		if(! isset($_SESSION[$fname_cache])){
+			$res['result'] = FALSE;
+			$res['msg'] = 'This form has been expired. Please reload the page.';
+			drupal_json_output($res);
+			exit;
+		}else{	
+			$output = theme('esignature_set_item', $_REQUEST);
+			$res['result'] = $output;
+			drupal_json_output($res);
+			exit;
+		}
+		if($req['not_reloaded']){
+			$res['reload'] = FALSE;
+		}else{
+			$res['reload'] = TRUE;
+		}
+		$res['result'] = FALSE;
+		$res['msg'] = 'There are some error occured. Please reload page and try again.';
+		drupal_json_output($res);
+		exit;
+	}
+
+	function esignature_generator_item_ref_callback(){
+		//check cache
+		$fname_cache = $_REQUEST['cache_id'];
+		$req = $_REQUEST;
+		$req['reference'] = TRUE;
+		if(! isset($_SESSION[$fname_cache])){
+			$res['result'] = FALSE;
+			$res['msg'] = 'This form has been expired. Please reload the page.';
+			drupal_json_output($res);
+			exit;
+		}else{
+			$output = theme('esignature_set_item', $req);
+			$res['result'] = $output;
+			drupal_json_output($res);
+			exit;
+		}
+		if($req['not_reloaded']){
+			$res['reload'] = FALSE;
+		}else{
+			$res['reload'] = TRUE;
+		}
+		$res['result'] = FALSE;
+		$res['msg'] = 'There are some error occured. Please reload page and try again.';
+		drupal_json_output($res);
+		exit;
+	}
+}
+
+//===========================FORM================================
+{
+	function esignature_form($form, $form_state, $defaults = array(), $cache_id = ''){
+	
+		if($cache_id == ''){
+			$cache_id = (isset($_GET['cache_id']) ? $_GET['cache_id'] : generate_cache_id());
+		}
+		
+		$form['cache_id'] = array(
+			'#title' => 'cache_id',
+			'#type' => 'hidden',
+			'#default_value' => $cache_id,
+		);
+		
+	
+		$themes = esignature_array_add_first(array('0' => '- please select -'), esignature_load_division_theme());
+		$form['division'] = array(
+			'#title' => 'Division',
+			'#type' => 'select',
+			'#options' => $themes,
+			'#default_value' => (isset($defaults['division']) ? $defaults['division'] : ''),
+		);
+		
+		
+		$form['name'] = array(
+			'#title' => 'Full Name',
+			'#type' => 'textfield',
+			'#default_value' => (isset($defaults['name']) ? $defaults['name'] : ''),
+		);		
+		$form['designation_line_1'] = array(
+			// '#title' => 'Designation Line 1',
+			'#title' => 'Designation Line',
+			'#type' => 'textfield',
+			'#default_value' => (isset($defaults['designation_line_1']) ? $defaults['designation_line_1'] : ''),
+		);	
+		// $form['designation_line_2'] = array(
+			// '#title' => 'Designation Line 2',
+			// '#type' => 'textfield',
+			// '#default_value' => (isset($defaults['designation_line_2']) ? $defaults['designation_line_2'] : ''),
+		// );	
+		$form['designation_line_2'] = array(
+			// '#title' => 'Designation Line 2',
+			'#title' => 'Region',
+			'#type' => 'select',
+			'#options' => array(
+				'' => '- please select -',
+				'' => ' - none -',
+				'Southeast Asia & Pacific' => 'Southeast Asia & Pacific',
+				'India & the Middle East' => 'India & the Middle East',
+				"Europe & the America's" => "Europe & the America's"
+			),
+			'#default_value' => (isset($defaults['designation_line_2']) ? $defaults['designation_line_2'] : ''),
+		);
+		
+		
+		$address = esignature_array_add_first(array('' => '- other address -'), esignature_load_address());
+		$form['address'] = array(
+			'#title' => 'Address',
+			'#type' => 'select',
+			'#options' => $address,
+			'#default_value' => (isset($defaults['address']) ? $defaults['address'] : ''),
+		);	
+		$form['other'] = array(
+			'#title' => 'Other',
+			'#type' => 'textfield',
+			'#default_value' => (isset($defaults['other']) ? $defaults['other'] : ''),
+		);
+		
+		
+		
+		$form['telephone_ext'] = array(
+			'#title' => '',
+			'#type' => 'textfield',
+			'#default_value' => (isset($defaults['telephone_ext']) ? $defaults['telephone_ext'] : ''),
+			'#prefix' => '<div class="prefix">',
+			'#suffix' => '</div>'
+		);
+			$form['telephone'] = array(
+				'#title' => '',
+				'#type' => 'textfield',
+				'#default_value' => (isset($defaults['telephone']) ? $defaults['telephone'] : ''),
+				'#prefix' => '<div class="sufix">',
+				'#suffix' => '</div>'
+			);
+		$form['mobile_ext'] = array(
+			'#title' => '',
+			'#type' => 'textfield',
+			'#default_value' => (isset($defaults['mobile_ext']) ? $defaults['mobile_ext'] : ''),
+			'#prefix' => '<div class="prefix">',
+			'#suffix' => '</div>'
+		);
+			$form['mobile'] = array(
+				'#title' => '',
+				'#type' => 'textfield',
+				'#default_value' => (isset($defaults['mobile']) ? $defaults['mobile'] : ''),
+				'#prefix' => '<div class="sufix">',
+				'#suffix' => '</div>'
+			);
+		$form['fax_ext'] = array(
+			'#title' => '',
+			'#type' => 'textfield',
+			'#default_value' => (isset($defaults['fax_ext']) ? $defaults['fax_ext'] : ''),
+			'#prefix' => '<div class="prefix">',
+			'#suffix' => '</div>'
+		);
+			$form['fax'] = array(
+				'#title' => '',
+				'#type' => 'textfield',
+				'#default_value' => (isset($defaults['fax']) ? $defaults['fax'] : ''),
+				'#prefix' => '<div class="sufix">',
+				'#suffix' => '</div>'
+			);
+		
+		
+		$form['email'] = array(
+			'#title' => 'Email',
+			'#type' => 'textfield',
+			'#default_value' => (isset($defaults['email']) ? $defaults['email'] : ''),
+		);
+		$form['skype'] = array(
+			'#title' => 'Skype',
+			'#type' => 'textfield',
+			'#default_value' => (isset($defaults['skype']) ? $defaults['skype'] : ''),
+		);
+		$website = esignature_array_add_first(array('' => '- please select -'), esignature_load_website());
+		$form['website'] = array(
+			'#title' => 'Website',
+			'#type' => 'select',
+			'#options' => $website,
+			'#default_value' => (isset($defaults['website']) ? $defaults['website'] : ''),
+		);	
+		
+		
+		$main_image = esignature_array_add_first(array('' => '- please select -'), esignature_load_main_image());
+		$form['main_image'] = array(
+			'#title' => 'Main Image',
+			'#type' => 'select',
+			'#options' => $main_image,
+			'#default_value' => (isset($defaults['main_image']) ? $defaults['main_image'] : ''),
+		);	
+		// krumo($main_image);
+		$bottom_logo = esignature_array_add_first(array('' => '- please select -'), esignature_load_bottom_logo());
+		$form['bottom_logo'] = array(
+			'#title' => 'Bottom Logo',
+			'#type' => 'select',
+			'#options' => $bottom_logo,
+			'#default_value' => (isset($defaults['bottom_logo']) ? $defaults['bottom_logo'] : ''),
+		);
+		
+		return $form;
+	}
+	
+	function esignature_form_bottom_imgae($default){
+		$bottom_logo = esignature_load_bottom_logo();
+		return esignature_form_multi_select('bottom_image', 'Bottom Image', $default, $bottom_logo);
+	}
+	
+	function esignature_form_multi_select($name, $label, $default = array(), $options){
+		if(!count($default)){
+			$default = array(0 => '');
+		}
+		$out = '';
+		$out .= '
+			<div class="form-item form-type-select form-item-'.$name.'">
+				<label for="edit-main-image">'.$label.'</label>
+				<div id="multi-'.$name.'" class="multiple-field">';
+					$i = 1;
+					foreach($default as $val){
+						$out .= '<div class="multiple-item-field"><select class="form-select item-'.$name.'" name="'.$name.'[]">
+									<option value="">- please select -</option>';
+									foreach($options as $key => $val2){
+										$out .= '<option value="'.$key.'" '.($key == $default[($i - 1)] ? 'selected="selected"' : '').'>'.$val2.'</option>';
+									}
+						$out .= '</select><a class="delete-item" href="javascript:void(0)">X</a></div>';
+						$i ++;
+					}
+		$out .= '</div>
+				<div id="add-multi-'.$name.'" class="add-multiple">
+					<a href="javascript:void(0)">+</a>
+				</div>
+			</div>
+		';
+		return $out;
+	}
+	
+	/**
+	 * Implement hook_form_alter()
+	 * Add tabs into top of the editor form
+	 */
+	function esignature_form_alter(&$form, $form_state){
+		if($form['#id'] == 'signature-node-form'){
+			$form['tabs'] = array(
+				'#markup' => '
+					<ul class="process-tab">
+						<li class="stept first active">Upload Template</li>
+						<li class="arrow-right"></li>
+						<li class="stept last">Upload Images</li>
+						<li class="arrow-right last inactive"></li>
+					</ul>					
+				<div class="clear"></div>
+				',
+				'#weight' => -99
+			);
+		}
+	}
+	
+	/**
+	 * Implement hook_node_save()
+	 * Add tabs into top of the editor form
+	 */
+	function esignature_node_presave($node){
+		if($node->type == 'signature'){
+			global $node_before;
+			$node_before = node_load($node->nid);
+			
+			$_GET['destination'] = 'node/'.$node->nid.'/signature/images';
+			
+			$title = $node->title;
+			$node->field_folder['und'][0]['value'] = esignature_generate_slug($title);
+			
+			//krumo($node);
+			//exit;
+		}
+	}
+	
+	/**
+	 * Implement hook_node_save()
+	 * Add tabs into top of the editor form
+	 */
+	function esignature_node_insert($node){
+		if($node->type == 'signature'){
+			global $node_before;
+					
+			$_GET['destination'] = 'node/'.$node->nid.'/signature/images';
+					
+			$dir = ESIGNATURE_TEMPLATE_DIRECTORY . $node->field_folder['und'][0]['value'];
+			if(! is_dir($dir)){
+				mkdir($dir);
+			}
+		}
+	}
+	
+	/**
+	 * Implement hook_node_save()
+	 * Add tabs into top of the editor form
+	 */
+	function esignature_node_update($node){
+		if($node->type == 'signature'){
+			global $node_before;
+			
+			$_GET['destination'] = 'node/'.$node->nid.'/signature/images';
+			
+			if($node_before->title != $node->title){
+				$old = ESIGNATURE_TEMPLATE_DIRECTORY . $node_before->field_folder['und'][0]['value'];
+				$new = ESIGNATURE_TEMPLATE_DIRECTORY . $node->field_folder['und'][0]['value'];
+				
+				if(is_dir($old)){
+					rename($old, $new);
+				}else{
+					mkdir($new);
+				}			
+			}
+		}
+	}
+	
+	
+}
+
+function esignature_generate_slug($phrase)
+{
+	$result = strtolower($phrase);
+
+	$result = preg_replace("/[^a-z0-9\s-]/", "", $result);
+	$result = trim(preg_replace("/[\s-]+/", " ", $result));
+	$result = preg_replace("/\s/", "_", $result);
+
+	return $result;
+}
+
+/*============================API================================*/
+{
+/**
+ * Load all the template
+ * @return array of object
+ */
+function esignature_load_division_theme(){
+	$sql = "SELECT
+		n.nid,
+		n.title
+		FROM
+		field_data_field_type AS a
+		INNER JOIN node AS n ON a.entity_id = n.nid
+		WHERE
+		n.type = 'signature'
+		AND a.field_type_value = '1'
+		AND n.status = '1'
+		order by sticky desc, title asc
+		";
+	$r = db_query($sql);
+	$res = array();
+	foreach($r as $row){
+		$res[$row->nid] = $row->title;
+	}
+	return $res;
+}
+
+/**
+ * Load all address
+ */
+function esignature_load_address(){
+	$sql = "SELECT
+		n.nid,
+		n.title
+		FROM
+		node AS n
+		WHERE
+		n.type = 'address'
+		AND n.status = '1'
+		";
+	$r = db_query($sql);
+	$res = array();
+	foreach($r as $row){
+		$res[$row->nid] = $row->title;
+	}
+	return $res;
+}
+
+/**
+ * Load all website
+ */
+function esignature_load_website(){
+	$sql = "SELECT
+		n.nid,
+		n.title
+		FROM
+		node AS n
+		WHERE
+		n.type = 'website'
+		AND n.status = '1'
+		ORDER BY title
+		";
+	$r = db_query($sql);
+	$res = array();
+	foreach($r as $row){
+		$res[$row->nid] = $row->title;
+	}
+	return $res;
+}
+
+/**
+ * Load all main image
+ */
+function esignature_load_main_image(){
+	$sql = "SELECT
+		n.nid,
+		n.title,
+		b.field_mi_group_value as groups
+		FROM
+		node AS n
+		LEFT JOIN field_data_field_mi_group as b on n.nid = b.entity_id
+		WHERE
+		n.type = 'main_image'
+		AND n.status = '1'
+		ORDER BY groups, n.title
+		";
+	$r = db_query($sql);
+	$res = array();
+	foreach($r as $row){
+		$res[$row->groups][$row->nid] = $row->title;
+	}
+	return $res;
+}
+
+
+/**
+ * Load all main bottom logo
+ */
+function esignature_load_bottom_logo(){
+	$sql = "SELECT
+		n.nid,
+		n.title
+		FROM
+		node AS n
+		WHERE
+		n.type = 'bottom_logo'
+		AND n.status = '1'
+		";
+	$r = db_query($sql);
+	$res = array();
+	foreach($r as $row){
+		$res[$row->nid] = $row->title;
+	}
+	return $res;
+}
+}
+
+function esignature_array_add_first($first = array(), $old = array()){
+	$temp = array();
+	foreach($first as $k => $v){
+		$temp[$k] = $v;
+	}
+	foreach($old as $k => $v){
+		$temp[$k] = $v;
+	}
+	return $temp;
+}
+
+function generate_cache_id(){
+	$hash = microtime();
+	$cache_id = base64_encode($hash);
+	$_SESSION[$cache_id] = TRUE;
+	return $cache_id;
+}
+
+function create_zip($files = array(), $destination = '', $overwrite = false) {
+	//if the zip file already exists and overwrite is false, return false
+	if(file_exists($destination)){
+		if(!$overwrite) { 
+			return false; 
+		}else{
+			unlink($destination);
+		}
+	}
+	
+	//vars
+	$valid_files = array();
+	//if files were passed in...
+	if(is_array($files)) {
+		//cycle through each file
+		foreach($files as $file => $fileto) {
+			//make sure the file exists
+			if(file_exists($file)) {
+				$valid_files[$file] = $fileto;
+			}
+		}
+	}
+	
+	//if we have good files...
+	// krumo($valid_files);
+	// exit;
+	if(count($valid_files)){
+		//create the archive
+		$zip = new ZipArchive();
+		if($zip->open($destination, $overwrite ? ZIPARCHIVE::OVERWRITE : ZIPARCHIVE::CREATE) !== true) {
+			return false;
+		}
+		//add the files
+		foreach($valid_files as $file => $fileto) {
+			$zip->addFile($file, $fileto);
+		}
+		//debug
+		//echo 'The zip archive contains ',$zip->numFiles,' files with a status of ',$zip->status;
+
+		//close the zip -- done!
+		$zip->close();
+
+		//check to make sure the file exists
+		return file_exists($destination);
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
+
