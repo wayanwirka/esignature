@@ -72,6 +72,7 @@ function template_preprocess_esignature_set_division(&$vars) {
 					$form_values['bottom_image_image_url'][] = (isset($bottom_image->field_bl_image) ? file_create_url($bottom_image->field_bl_image['und'][0]['uri']) : '');
 					$form_values['bottom_image_image_name'][] = (isset($bottom_image->field_bl_image) ? ($bottom_image->field_bl_image['und'][0]['filename']) : '');
 					$form_values['bottom_image_links'][] = (isset($bottom_image->field_bl_link) ? ($bottom_image->field_bl_link['und'][0]['value']) : '');
+					$form_values['bottom_image_html'][] = (isset($bottom_image->field_field_bl_html) ? ($bottom_image->field_field_bl_html['und'][0]['value']) : '');
 				}
 			}
 			
@@ -124,7 +125,10 @@ function template_preprocess_esignature_set_division(&$vars) {
 			}
 			$pattern['{bottom_image}'] = '';
 			foreach($form_values['bottom_image_image_url'] as $index => $url){
-				if($url){
+        // Check if html presents then use html instead
+        if( isset($form_values['bottom_image_html'][$index]) && $form_values['bottom_image_html'][$index] ){
+          $pattern['{bottom_image}'] .= esignature_file_uris_to_urls( $form_values['bottom_image_html'][$index] );
+        }elseif($url){
 					if(isset($form_values['bottom_image_links'][$index]) && $form_values['bottom_image_links'][$index]){
 						$pattern['{bottom_image}'] .= '<a href="'. $form_values['bottom_image_links'][$index] .'"><img src="'. $url . '" /></a>';
 					}else{
@@ -132,7 +136,7 @@ function template_preprocess_esignature_set_division(&$vars) {
 					}
 				}
 			}
-						
+			
 			$form_values['body'] = $template['body']['#items'][0]['value'];
 			$vars['pattern'] = $pattern;
 			
@@ -255,6 +259,7 @@ function theme_esignature_set_item(&$vars){
 					$bottom_image_image_url = array();
 					$bottom_image_image_name = array();
 					$bottom_image_links = array();
+					$bottom_image_html = array();
 					foreach($_REQUEST['item_value'] as $nid){
 						if($nid){
 							$bottom_image = node_load($nid);
@@ -263,9 +268,11 @@ function theme_esignature_set_item(&$vars){
 							$bottom_image_image_url[] = (isset($bottom_image->field_bl_image) ? file_create_url($bottom_image->field_bl_image['und'][0]['uri']) : '');
 							$bottom_image_image_name[] = (isset($bottom_image->field_bl_image) ? ($bottom_image->field_bl_image['und'][0]['filename']) : '');
 							$bottom_image_links[] = (isset($bottom_image->field_bl_link) ? ($bottom_image->field_bl_link['und'][0]['value']) : '');
+							$bottom_image_html[] = (isset($bottom_image->field_field_bl_html) ? ($bottom_image->field_field_bl_html['und'][0]['value']) : '');
 						}else{
 							$bottom_image_image_url[] = '';
 							$bottom_image_image_name[] = '';
+							$bottom_image_html[] = '';
 						}
 					}
 					
@@ -274,10 +281,14 @@ function theme_esignature_set_item(&$vars){
 					$form_values['bottom_image_image_url'] = $bottom_image_image_url;
 					$form_values['bottom_image_image_name'] = $bottom_image_image_name;
 					$form_values['bottom_image_links'] = $bottom_image_links;
+					$form_values['bottom_image_html'] = $bottom_image_html;
 					
 					$pattern['{bottom_image}'] = '';
 					foreach($form_values['bottom_image_image_url'] as $index => $url){
-						if($url){
+            // Use html instead if presents
+            if( isset($form_values['bottom_image_html'][$index]) && $form_values['bottom_image_html'][$index] ){
+              $pattern['{bottom_image}'] .= esignature_file_uris_to_urls( $form_values['bottom_image_html'][$index] );
+						}elseif($url){
 							if(isset($form_values['bottom_image_links'][$index]) && $form_values['bottom_image_links'][$index]){
 								$pattern['{bottom_image}'] .= '<a href="'. $form_values['bottom_image_links'][$index] .'"><img src="'. $url . '" /></a>';
 							}else{

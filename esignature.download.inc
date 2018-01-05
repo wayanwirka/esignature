@@ -67,13 +67,32 @@ function esignature_generator_download_callback($cache_id, $division){
 		if(isset($form_values['bottom_image_image_uri']) && is_array($form_values['bottom_image_image_uri'])){
 			if($form_values['bottom_image_image_uri']){
 				for ($i = 0; $i < count($form_values['bottom_image_image_uri']); $i ++){
-					$file = drupal_realpath($form_values['bottom_image_image_uri'][$i]);
-					//esignature_copy($file, $dir . '/' . $form_values['bottom_image_image_name'][$i]);
-					$zfiles[$file] = $form_values['bottom_image_image_name'][$i];
-					
-					if(isset($_GET['mode']) && $_GET['mode'] == 'online'){
-						$form_values['bottom_image_image_name'][$i] = file_create_url($form_values['bottom_image_image_uri'][$i]);
-					}
+          // If html is present then scan file uri (public://image.jpg) replace to url
+          if( $form_values['bottom_image_html'][$i] ){
+            $file_uris = esignature_scan_file_uris( $form_values['bottom_image_html'][$i] );
+            if( count($file_uris) ){
+              $file_urls = array();
+              foreach($file_uris as $file_uri){
+                $file = drupal_realpath( $file_uri );
+                $filename = drupal_basename( $file_uri );
+                $zfiles[$file] = $filename;
+                if(isset($_GET['mode']) && $_GET['mode'] == 'online'){
+                  $filename = file_create_url( $file_uri );
+                }
+                $file_urls[$file_uri] = $filename;
+              }
+              // Renew the file path
+              $form_values['bottom_image_html'][$i] = strtr( $form_values['bottom_image_html'][$i], $file_uris, $file_urls );
+            }
+          }else{
+            $file = drupal_realpath($form_values['bottom_image_image_uri'][$i]);
+            //esignature_copy($file, $dir . '/' . $form_values['bottom_image_image_name'][$i]);
+            $zfiles[$file] = $form_values['bottom_image_image_name'][$i];
+            
+            if(isset($_GET['mode']) && $_GET['mode'] == 'online'){
+              $form_values['bottom_image_image_name'][$i] = file_create_url($form_values['bottom_image_image_uri'][$i]);
+            }
+          }
 				}
 			}
 		}  
@@ -82,7 +101,10 @@ function esignature_generator_download_callback($cache_id, $division){
 		$pattern['{bottom_image}'] = '';
 		if(isset($form_values['bottom_image_image_name']) && is_array($form_values['bottom_image_image_name'])){
 			foreach($form_values['bottom_image_image_name'] as $index => $url){
-				if($url){
+        // Use html instead of image if presents
+        if( isset($form_values['bottom_image_html'][$index]) && $form_values['bottom_image_html'][$index] ){
+          $pattern['{bottom_image}'] .= $form_values['bottom_image_html'][$index];
+				}elseif($url){
 					if(isset($form_values['bottom_image_links'][$index]) && $form_values['bottom_image_links'][$index]){
 						$pattern['{bottom_image}'] .= '<a href="'. $form_values['bottom_image_links'][$index] .'"><img src="'. $url . '" /></a>';
 					}else{
