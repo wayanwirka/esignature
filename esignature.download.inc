@@ -20,6 +20,12 @@ function esignature_generator_download_callback($cache_id, $division){
 		$opt = unserialize($_SESSION[$cache_id]);
 		$form_values = $opt['form_values'];
 		$pattern = $opt['pattern'];
+    
+    // debug
+    if( esignature_debug() ){
+      krumo($form_values);
+      krumo($pattern);
+    }
 		
 		
 		//load all resource to temp directory
@@ -137,6 +143,7 @@ function esignature_generator_download_callback($cache_id, $division){
     // debug
     if( esignature_debug() ){
       krumo($form_values);
+      krumo($pattern);
       krumo($value);
     }
 		
