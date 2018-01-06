@@ -722,7 +722,9 @@ function create_zip($files = array(), $destination = '', $overwrite = false) {
 		}else{
 			unlink($destination);
 		}
-	}
+	}else{
+    $overwrite = false;
+  }
 	
 	//vars
 	$valid_files = array();
