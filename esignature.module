@@ -740,6 +740,7 @@ function create_zip($files = array(), $destination = '', $overwrite = false) {
 	// debug
   if( esignature_debug() ){
     krumo($valid_files);
+    krumo($destination);
     $zip = new ZipArchive();
     krumo($zip);
   }
