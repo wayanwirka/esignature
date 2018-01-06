@@ -38,7 +38,7 @@ function esignature_generator_download_callback($cache_id, $division){
 
 		$zfiles = array();
 		//$zfiles[$form_values['full_directory_file']] = 'index.html';
-		$zfiles[$form_values['full_directory_file']] = trim($form_values['email']) . '.htm';
+		$zfiles[ drupal_realpath($form_values['full_directory_file']) ] = trim($form_values['email']) . '.html';
 		
 		//copy all file from template directory into $dir
 		$files = scandir($form_values['full_directory']);
