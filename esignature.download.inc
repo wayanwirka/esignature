@@ -3,7 +3,7 @@
 function esignature_generator_download_callback($cache_id, $division){
 	global $base_url;
   
-  variable_set('esignature_debug', 0);
+  variable_set('esignature_debug', 1);
 	
 	ob_start();
 	
@@ -133,6 +133,12 @@ function esignature_generator_download_callback($cache_id, $division){
 		
 		//prepare the content
 		$value = strtr($value, $pattern);
+    
+    // debug
+    if( esignature_debug() ){
+      krumo($form_values);
+      krumo($value);
+    }
 		
 		//prepare the file
 		file_put_contents($form_values['full_directory_file'], $value);
