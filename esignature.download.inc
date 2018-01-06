@@ -46,7 +46,7 @@ function esignature_generator_download_callback($cache_id, $division){
 			if($file != '.' && $file != '..' && substr($file, -4) != 'html' && substr($file, -4) != '.zip' && !is_dir($file)){
 				//$fdest = $dir . '/' . $file;
 				$filefrom = $form_values['full_directory'] . '/' . $file;
-				$zfiles[$filefrom] = $file;
+				$zfiles[$filefrom] = drupal_realpath( $file );
 				//esignature_copy($file, $fdest);
 			}
 		}
@@ -133,7 +133,7 @@ function esignature_generator_download_callback($cache_id, $division){
 		// krumo($zfiles);
 		// exit;
 		//$zip = 'sites/default/templates/esignature.zip';
-		$zip = $form_values['full_directory'] . '/esignature.zip';
+		$zip = drupal_realpath( $form_values['full_directory'] . '/esignature.zip' );
     $created_zip = create_zip($zfiles, $zip, true);
 		if( ! $created_zip ){
 			$msg[] = 'Error while create your zipped file. Please try again.';
