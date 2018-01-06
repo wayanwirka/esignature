@@ -747,6 +747,10 @@ function create_zip($files = array(), $destination = '', $overwrite = false) {
 		//create the archive
 		$zip = new ZipArchive();
 		if($zip->open($destination, $overwrite ? ZIPARCHIVE::OVERWRITE : ZIPARCHIVE::CREATE) !== true) {
+      // debug
+      if( esignature_debug() ){
+        krumo( 'Can\'t create zip file' );
+      }
 			return false;
 		}
 		//add the files
