@@ -740,7 +740,8 @@ function create_zip($files = array(), $destination = '', $overwrite = false) {
 	// debug
   if( esignature_debug() ){
     krumo($valid_files);
-    $valid_files = array( '/var/www/vhosts/dev.karmagroup.com/httpsdocs/esignature/sites/default/files/apps.png' => 'apps.png' );
+    $zip = new ZipArchive();
+    krumo($zip);
   }
   
 	if(count($valid_files)){
