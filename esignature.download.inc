@@ -2,6 +2,8 @@
 
 function esignature_generator_download_callback($cache_id, $division){
 	global $base_url;
+  
+  variable_set('esignature_debug', 0);
 	
 	ob_start();
 	
