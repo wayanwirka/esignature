@@ -136,7 +136,11 @@ function esignature_generator_download_callback($cache_id, $division){
 		$zip = $form_values['full_directory'] . '/esignature.zip';
 		if(!create_zip($zfiles, $zip, true)){
 			$msg[] = 'Error while create your zipped file. Please try again.';
-			// throw new Exception('5');
+      // return this error if admin user
+      if (user_access('administer site configuration')) {
+        echo implode(', ', $msg);
+        drupal_exit();
+      }
 		}
 		
 		set_time_limit(0);
