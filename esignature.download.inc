@@ -37,7 +37,13 @@ function esignature_generator_download_callback($cache_id, $division){
 		$temp_file = $dir . '/' . $cache_id . '.html';
 
 		$zfiles = array();
-		//$zfiles[$form_values['full_directory_file']] = 'index.html';
+		
+    // debug
+    if( esignature_debug() ){
+      krumo( $form_values['full_directory_file'] );
+      krumo( drupal_realpath($form_values['full_directory_file']) );
+    }
+    
 		$zfiles[ drupal_realpath($form_values['full_directory_file']) ] = trim($form_values['email']) . '.html';
 		
 		//copy all file from template directory into $dir
