@@ -757,6 +757,11 @@ function create_zip($files = array(), $destination = '', $overwrite = false) {
 
 		//close the zip -- done!
 		$zip->close();
+    
+    // debug
+    if( esignature_debug() ){
+      krumo('zip created');
+    }
 
 		//check to make sure the file exists
 		return file_exists($destination);
