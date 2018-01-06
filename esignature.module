@@ -710,6 +710,10 @@ function esignature_file_uris_to_urls( $str, &$stored_uris ){
   return $str;
 }
 
+function esignature_debug(){
+  return user_access('administer site configuration') && variable_get('esignature_debug', 1);
+}
+
 function create_zip($files = array(), $destination = '', $overwrite = false) {
 	//if the zip file already exists and overwrite is false, return false
 	if(file_exists($destination)){
@@ -733,9 +737,11 @@ function create_zip($files = array(), $destination = '', $overwrite = false) {
 		}
 	}
 	
-	//if we have good files...
-	// krumo($valid_files);
-	// exit;
+	// debug
+  if( esignature_debug() ){
+    krumo($valid_files);
+  }
+  
 	if(count($valid_files)){
 		//create the archive
 		$zip = new ZipArchive();

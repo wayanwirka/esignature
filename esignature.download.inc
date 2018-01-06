@@ -134,12 +134,14 @@ function esignature_generator_download_callback($cache_id, $division){
 		// exit;
 		//$zip = 'sites/default/templates/esignature.zip';
 		$zip = $form_values['full_directory'] . '/esignature.zip';
-		if(!create_zip($zfiles, $zip, true)){
+    $created_zip = create_zip($zfiles, $zip, true);
+		if( ! $created_zip ){
 			$msg[] = 'Error while create your zipped file. Please try again.';
-      // return this error if admin user
-      if (user_access('administer site configuration')) {
-        echo implode(', ', $msg);
-        drupal_exit();
+      
+      // debug
+      if( esignature_debug() ){
+        krumo($created_zip);
+        krumo($msg);
       }
 		}
 		
@@ -147,6 +149,10 @@ function esignature_generator_download_callback($cache_id, $division){
 		
 		$fsize = filesize($zip);
 		
+    // debug
+    if( esignature_debug() ){
+      drupal_exit();
+    }
 				
 		// $fname = esignature_generate_slug(($form_values['name'] ? $form_values['name'] : 'no name')) . '.zip';
 		$fname = trim($form_values['email']) . '.zip';
