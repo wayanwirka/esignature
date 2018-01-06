@@ -24,7 +24,7 @@ function esignature_generator_download_callback($cache_id, $division){
     // debug
     if( esignature_debug() ){
       krumo($form_values);
-      krumo($pattern);
+      // krumo($pattern);
     }
 		
 		
@@ -96,7 +96,7 @@ function esignature_generator_download_callback($cache_id, $division){
                 $file_urls[$file_uri] = $filename;
               }
               // Renew the file path
-              $form_values['bottom_image_html'][$i] = strtr( $form_values['bottom_image_html'][$i], $file_uris, $file_urls );
+              $form_values['bottom_image_html'][$i] = strtr( $form_values['bottom_image_html'][$i], $file_urls );
             }
           }else{
             $file = drupal_realpath($form_values['bottom_image_image_uri'][$i]);
