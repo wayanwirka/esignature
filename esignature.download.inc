@@ -3,7 +3,11 @@
 function esignature_generator_download_callback($cache_id, $division){
 	global $base_url;
   
-  variable_set('esignature_debug', 1);
+  if( isset($_GET['debug']) && $_GET['debug'] = 'ui438uaisjdfif89734ihaserkjxc' ){
+    variable_set('esignature_debug', 1);
+  }else{
+    ariable_set('esignature_debug', 0);
+  }
 	
 	ob_start();
 	
