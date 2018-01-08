@@ -20,9 +20,13 @@ jQuery(document).ready(function($){
 		division_changed();
 	}
 	
-	function division_changed(){
+	function division_changed( divID ){
 		if(inited)
 			window.location.hash = '#' + $('#edit-division').find('option:selected').val();
+    
+    if( !divID ){
+      divID = $('#edit-division').find('option:selected').val();
+    }
 		
 		$('#preview-loading').fadeIn();
 		$.ajax({
@@ -30,7 +34,7 @@ jQuery(document).ready(function($){
 			url: Drupal.settings.basePath + 'admin/esignature/generator',
 			dataType: 'json',
 			data: {
-					division : $('#edit-division').find('option:selected').val(), 
+					division : divID, 
 					cache_id : $('input[name="cache_id"]').val()
 				},
 			success: function(res){
@@ -273,12 +277,12 @@ jQuery(document).ready(function($){
 	hash = hash.replace('#', '');
 	if(hash){
 		//console.log("#edit-division option[value='"+ hash +"']");
-		// $("#edit-division option[value='"+ hash +"']").attr('selected', 'selected');
-		// division_changed();
-    setTimeout(1000, function(){
-        $("#edit-division option[value='"+ hash +"']").attr('selected', 'selected');
-        division_changed();
-      });
+		$("#edit-division option[value='"+ hash +"']").attr('selected', 'selected');
+		division_changed( hash );
+    // setTimeout(500, function(){
+        // $("#edit-division option[value='"+ hash +"']").attr('selected', 'selected');
+        // division_changed();
+      // });
 	}
 	inited = true;
 });
