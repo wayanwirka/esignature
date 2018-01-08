@@ -276,7 +276,7 @@ jQuery(document).ready(function($){
 		// $("#edit-division option[value='"+ hash +"']").attr('selected', 'selected');
 		// division_changed();
     setTimeout(1000, function(){
-        $("#edit-division").val( hash );
+        $("#edit-division option[value='"+ hash +"']").attr('selected', 'selected');
         division_changed();
       });
 	}
