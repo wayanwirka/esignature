@@ -6,8 +6,13 @@ function esignature_generator_download_callback($cache_id, $division){
   if( isset($_GET['debug']) && $_GET['debug'] = 'ui438uaisjdfif89734ihaserkjxc' ){
     variable_set('esignature_debug', 1);
   }else{
-    ariable_set('esignature_debug', 0);
+    variable_set('esignature_debug', 0);
   }
+  
+  // if( esignature_debug() ){
+    // krumo('======================');
+    // exit;
+  // }
 	
 	ob_start();
 	
@@ -28,15 +33,15 @@ function esignature_generator_download_callback($cache_id, $division){
     // debug
     if( esignature_debug() ){
       krumo($form_values);
-      // krumo($pattern);
     }
 		
 		
 		//load all resource to temp directory
-		$temp = file_directory_temp() . '/';
-		$dir = $temp . $cache_id;
+		// $temp = file_directory_temp() . '/';
+		// $dir = $temp . $cache_id;
 		
 		//create directory
+    /*
 		if(!is_dir($dir)){
 			if(!mkdir($dir)){
 				watchdog('e-signature', 'Error make new directory of "'.$cache_id.'".', NULL, WATCHDOG_ERROR);
@@ -44,19 +49,20 @@ function esignature_generator_download_callback($cache_id, $division){
 				throw new Exception('5');
 			}
 		}
+    */
 		
-		$temp_filename = $cache_id . '.html';
-		$temp_file = $dir . '/' . $cache_id . '.html';
+		// $temp_filename = $cache_id . '.html';
+		// $temp_file = $dir . '/' . $cache_id . '.html';
 
 		$zfiles = array();
 		
     // debug
-    if( esignature_debug() ){
-      krumo( $form_values['full_directory_file'] );
-      krumo( drupal_realpath($form_values['full_directory_file']) );
-    }
+    // if( esignature_debug() ){
+      // krumo( $form_values['full_directory_file'] );
+      // krumo( drupal_realpath($form_values['full_directory_file']) );
+    // }
     
-		$zfiles[ drupal_realpath($form_values['full_directory_file']) ] = trim($form_values['email']) . '.html';
+		// $zfiles[ drupal_realpath($form_values['full_directory_file']) ] = trim($form_values['email']) . '.html';
 		
     if( !isset($_GET['mode']) || $_GET['mode'] !== 'online'){
       
@@ -143,27 +149,30 @@ function esignature_generator_download_callback($cache_id, $division){
 		}
 		
 		// we modify main image first
-		$value = str_ireplace('{main_image}', $pattern['{main_image}'], $form_values['body']);
+		$preview_html = str_ireplace('{main_image}', $pattern['{main_image}'], $form_values['body']);
 		
 		//prepare the content
-		$value = strtr($value, $pattern);
+    // $value
+		$preview_html = strtr($preview_html, $pattern);
     
     // debug
     if( esignature_debug() ){
       krumo($form_values);
       krumo($pattern);
-      krumo($value);
+      krumo($preview_html);
     }
 		
 		//prepare the file
-		file_put_contents($form_values['full_directory_file'], $value);
+		//file_put_contents($form_values['full_directory_file'], $value);
+    $html_filename = trim($form_values['email']) ? trim($form_values['email']) : 'index';
+    $html_filename .= '.html';
 		
 		//make zip file
 		// krumo($zfiles);
 		// exit;
 		//$zip = 'sites/default/templates/esignature.zip';
 		$zip = drupal_realpath( $form_values['full_directory'] ) . '/esignature.zip' ;
-    $created_zip = create_zip($zfiles, $zip, true);
+    $created_zip = create_zip($zfiles, $zip, true, $html_filename, $preview_html);
 		if( ! $created_zip ){
 			$msg[] = 'Error while create your zipped file. Please try again.';
       
