@@ -8,3 +8,40 @@
  * Install or update the  Subscriptions interface.
  */
 
+// function esignature_get_schema(){
+  // $schema['esig_preview'] = array(
+    // 'description' => 'Table data for template output.',
+    // 'fields' => array(
+      // 'eid' => array(
+        // 'description' => 'Esignature ID.',
+        // 'type' => 'varchar',
+        // 'length' => 124,
+        // 'not null' => TRUE,
+        // 'default' => ''),
+      // 'preview' => array(
+        // 'description' => 'Preview html content.',
+        // 'type' => 'text',
+        // 'not null' => FALSE,
+        // 'default' => ''),
+      // 'created' => array(
+        // 'description' => 'Timestam.',
+        // 'type' => 'int',
+        // 'not null' => TRUE,
+        // 'default' => 0),
+    // 'primary key' => array('eid'),
+  // );
+  
+  // return $schema;
+// }
+
+ // /**
+  // * Implements hook_schema
+  // */
+// function esignature_schema(){
+  // return esignature_get_schema();
+// }
+
+// function esignature_update_7012() {
+  // $schema = esignature_get_schema();
+  // db_create_table('esig_preview', $schema['esig_preview']);
+// }

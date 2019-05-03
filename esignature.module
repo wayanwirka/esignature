@@ -714,7 +714,7 @@ function esignature_debug(){
   return user_access('administer site configuration') && variable_get('esignature_debug', 1);
 }
 
-function create_zip($files = array(), $destination = '', $overwrite = false) {
+function create_zip($files = array(), $destination = '', $overwrite = false, $html_filename, $html_content) {
 	//if the zip file already exists and overwrite is false, return false
 	if(file_exists($destination)){
 		if(!$overwrite) { 
@@ -729,7 +729,7 @@ function create_zip($files = array(), $destination = '', $overwrite = false) {
 	//vars
 	$valid_files = array();
 	//if files were passed in...
-	if(is_array($files)) {
+	if(is_array($files) && count($files)) {
 		//cycle through each file
 		foreach($files as $file => $fileto) {
 			//make sure the file exists
@@ -745,7 +745,7 @@ function create_zip($files = array(), $destination = '', $overwrite = false) {
     krumo($destination);
   }
   
-	if(count($valid_files)){
+	if(count($valid_files) || $html_content){
 		//create the archive
 		$zip = new ZipArchive();
 		if($zip->open($destination, $overwrite ? ZIPARCHIVE::OVERWRITE : ZIPARCHIVE::CREATE) !== true) {
@@ -755,7 +755,10 @@ function create_zip($files = array(), $destination = '', $overwrite = false) {
       }
 			return false;
 		}
-		//add the files
+    // Add html
+    $zip->addFromString($html_filename, $html_content);
+    
+		// add the files
 		foreach($valid_files as $file => $fileto) { 
 			$zip->addFile($file, $fileto);
 		}
