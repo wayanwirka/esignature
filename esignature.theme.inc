@@ -93,6 +93,7 @@ function template_preprocess_esignature_set_division(&$vars) {
 			}else{
 				$pattern['{telephone}'] = ($form_values['telephone_ext'] ? '+' . $form_values['telephone_ext'] . '' . $form_values['telephone'] : $form_values['telephone']);
         $pattern['{telephone_number}'] = str_ireplace( ' ', '', $pattern['{telephone}'] ); 
+        $pattern['{telephone_number}'] = preg_replace( "/\([^)]+\)/", "", $pattern['{telephone_number}'] );
 			}
 			
 			if(trim($form_values['mobile']) == ''){
@@ -103,6 +104,7 @@ function template_preprocess_esignature_set_division(&$vars) {
 			}else{
 				$pattern['{mobile}'] = ($form_values['mobile_ext'] ? '+' . $form_values['mobile_ext'] . '' . $form_values['mobile'] : $form_values['mobile']);
         $pattern['{mobile_number}'] = str_ireplace( ' ', '', $pattern['{mobile}'] ); 
+        $pattern['{mobile_number}'] = preg_replace( "/\([^)]+\)/", "", $pattern['{mobile_number}'] );
 			}
 			
 			if(trim($form_values['fax']) == ''){
@@ -122,7 +124,8 @@ function template_preprocess_esignature_set_division(&$vars) {
 			}else{
 				$pattern['{wa}'] = ($form_values['wa_ext'] ? '+' . $form_values['wa_ext'] . '' . $form_values['wa'] : $form_values['wa']);
 				$pattern['{wa_number}'] = ($form_values['wa_ext'] ? $form_values['wa_ext'] . '' . $form_values['wa'] : $form_values['wa']);
-        $pattern['{wa_number}'] = str_ireplace( ' ', '', $pattern['{wa_number}'] ); 
+        $pattern['{wa_number}'] = str_ireplace( ' ', '', $pattern['{wa_number}'] );  
+        $pattern['{wa_number}'] = preg_replace( "/\([^)]+\)/", "", $pattern['{wa_number}'] );
 			}
 			
 			if(trim($form_values['skype']) == ''){
@@ -337,15 +340,18 @@ function theme_esignature_set_item(&$vars){
 			if(in_array($_REQUEST['item_name'], array("telephone", "mobile", "fax"))){
 				$pattern['{telephone}'] = ($form_values['telephone_ext'] ? '+' . $form_values['telephone_ext'] . '' . $form_values['telephone'] : $form_values['telephone']);
         $pattern['{telephone_number}'] = str_ireplace( ' ', '', $pattern['{telephone}'] ); 
+        $pattern['{telephone_number}'] = preg_replace( "/\([^)]+\)/", "", $pattern['{telephone_number}'] );
 				
 				$pattern['{mobile}'] = ($form_values['mobile_ext'] ? '+' . $form_values['mobile_ext'] . '' . $form_values['mobile'] : $form_values['mobile']);
         $pattern['{mobile_number}'] = str_ireplace( ' ', '', $pattern['{mobile}'] ); 
+        $pattern['{mobile_number}'] = preg_replace( "/\([^)]+\)/", "", $pattern['{mobile_number}'] );
 				
 				$pattern['{fax}'] = ($form_values['fax_ext']  ? '+' . $form_values['fax_ext'] . '' . $form_values['fax'] : $form_values['fax']);
         
 				$pattern['{wa}'] = ($form_values['wa_ext']  ? '+' . $form_values['wa_ext'] . '' . $form_values['wa'] : $form_values['wa']);
 				$pattern['{wa_number}'] = ($form_values['wa_ext']  ? $form_values['wa_ext'] . '' . $form_values['wa'] : $form_values['wa']);
-        $pattern['{wa_number}'] = str_ireplace( ' ', '', $pattern['{wa_number}'] ); 
+        $pattern['{wa_number}'] = str_ireplace( ' ', '', $pattern['{wa_number}'] );  
+        $pattern['{wa_number}'] = preg_replace( "/\([^)]+\)/", "", $pattern['{wa_number}'] );
 			}
 			
 			//set the empty value
@@ -357,6 +363,7 @@ function theme_esignature_set_item(&$vars){
 			}else{
 				$pattern['{telephone}'] = ($form_values['telephone_ext'] ? '+' . $form_values['telephone_ext'] . '' . $form_values['telephone'] : $form_values['telephone']);
         $pattern['{telephone_number}'] = str_ireplace( ' ', '', $pattern['{telephone}'] ); 
+        $pattern['{telephone_number}'] = preg_replace( "/\([^)]+\)/", "", $pattern['{telephone_number}'] );
 				unset($pattern[$form_values['telephone_empty']]);
 			}
 			
@@ -368,6 +375,7 @@ function theme_esignature_set_item(&$vars){
 			}else{
 				$pattern['{mobile}'] = ($form_values['mobile_ext'] ? '+' . $form_values['mobile_ext'] . '' . $form_values['mobile'] : $form_values['mobile']);
         $pattern['{mobile_number}'] = str_ireplace( ' ', '', $pattern['{mobile}'] ); 
+        $pattern['{mobile_number}'] = preg_replace( "/\([^)]+\)/", "", $pattern['{mobile_number}'] );
 				unset($pattern[$form_values['mobile_empty']]);
 			}
 			
@@ -390,6 +398,7 @@ function theme_esignature_set_item(&$vars){
 				$pattern['{wa}'] = ($form_values['wa_ext'] ? '+' . $form_values['wa_ext'] . '' . $form_values['wa'] : $form_values['wa']);
 				$pattern['{wa_number}'] = ($form_values['wa_ext'] ? $form_values['wa_ext'] . '' . $form_values['wa'] : $form_values['wa']);
         $pattern['{wa_number}'] = str_ireplace( ' ', '', $pattern['{wa_number}'] ); 
+        $pattern['{wa_number}'] = preg_replace( "/\([^)]+\)/", "", $pattern['{wa_number}'] );
 				unset($pattern[$form_values['wa_empty']]);
 			}
 			
