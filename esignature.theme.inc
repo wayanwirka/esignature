@@ -92,6 +92,7 @@ function template_preprocess_esignature_set_division(&$vars) {
 				}
 			}else{
 				$pattern['{telephone}'] = ($form_values['telephone_ext'] ? '+' . $form_values['telephone_ext'] . '' . $form_values['telephone'] : $form_values['telephone']);
+        $pattern['{telephone_number}'] = str_ireplace( ' ', '', $pattern['{telephone}'] ); 
 			}
 			
 			if(trim($form_values['mobile']) == ''){
@@ -101,6 +102,7 @@ function template_preprocess_esignature_set_division(&$vars) {
 				}
 			}else{
 				$pattern['{mobile}'] = ($form_values['mobile_ext'] ? '+' . $form_values['mobile_ext'] . '' . $form_values['mobile'] : $form_values['mobile']);
+        $pattern['{mobile_number}'] = str_ireplace( ' ', '', $pattern['{mobile}'] ); 
 			}
 			
 			if(trim($form_values['fax']) == ''){
@@ -334,8 +336,10 @@ function theme_esignature_set_item(&$vars){
 			
 			if(in_array($_REQUEST['item_name'], array("telephone", "mobile", "fax"))){
 				$pattern['{telephone}'] = ($form_values['telephone_ext'] ? '+' . $form_values['telephone_ext'] . '' . $form_values['telephone'] : $form_values['telephone']);
+        $pattern['{telephone_number}'] = str_ireplace( ' ', '', $pattern['{telephone}'] ); 
 				
 				$pattern['{mobile}'] = ($form_values['mobile_ext'] ? '+' . $form_values['mobile_ext'] . '' . $form_values['mobile'] : $form_values['mobile']);
+        $pattern['{mobile_number}'] = str_ireplace( ' ', '', $pattern['{mobile}'] ); 
 				
 				$pattern['{fax}'] = ($form_values['fax_ext']  ? '+' . $form_values['fax_ext'] . '' . $form_values['fax'] : $form_values['fax']);
         
@@ -352,6 +356,7 @@ function theme_esignature_set_item(&$vars){
 				}
 			}else{
 				$pattern['{telephone}'] = ($form_values['telephone_ext'] ? '+' . $form_values['telephone_ext'] . '' . $form_values['telephone'] : $form_values['telephone']);
+        $pattern['{telephone_number}'] = str_ireplace( ' ', '', $pattern['{telephone}'] ); 
 				unset($pattern[$form_values['telephone_empty']]);
 			}
 			
@@ -362,6 +367,7 @@ function theme_esignature_set_item(&$vars){
 				}
 			}else{
 				$pattern['{mobile}'] = ($form_values['mobile_ext'] ? '+' . $form_values['mobile_ext'] . '' . $form_values['mobile'] : $form_values['mobile']);
+        $pattern['{mobile_number}'] = str_ireplace( ' ', '', $pattern['{mobile}'] ); 
 				unset($pattern[$form_values['mobile_empty']]);
 			}
 			
