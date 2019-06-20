@@ -343,6 +343,20 @@ function esignature_menu() {
 				'#prefix' => '<div class="sufix">',
 				'#suffix' => '</div>'
 			);
+		$form['wa_ext'] = array(
+			'#title' => '',
+			'#type' => 'textfield',
+			'#default_value' => (isset($defaults['wa_ext']) ? $defaults['wa_ext'] : ''),
+			'#prefix' => '<div class="prefix">',
+			'#suffix' => '</div>'
+		);
+			$form['wa'] = array(
+				'#title' => '',
+				'#type' => 'textfield',
+				'#default_value' => (isset($defaults['wa']) ? $defaults['wa'] : ''),
+				'#prefix' => '<div class="sufix">',
+				'#suffix' => '</div>'
+			);
 		$form['fax_ext'] = array(
 			'#title' => '',
 			'#type' => 'textfield',

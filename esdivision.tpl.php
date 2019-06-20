@@ -67,6 +67,14 @@ if($division == ''){
 						<div class="clear"></div>
 					</div>
 					<div class="item-group-wrapper">
+						<label>WhatsApp</label>
+						<span class="sparate">+ </span>
+						<?php print render($form['wa_ext']); ?>
+						<span class="sparate"></span>
+						<?php print render($form['wa']); ?>
+						<div class="clear"></div>
+					</div>
+					<div class="item-group-wrapper">
 						<label>Fax</label>
 						<span class="sparate">+ </span>
 						<?php print render($form['fax_ext']); ?>

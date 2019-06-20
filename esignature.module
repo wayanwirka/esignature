@@ -4,7 +4,7 @@ define('ESIGNATURE_TEMPLATE_DIRECTORY', 'sites/default/templates/');
 
 
 /**
- * Implements hook_permission().
+* Implements hook_permission().
  */
 function esignature_permission() {
   return array(
@@ -361,6 +361,20 @@ function esignature_menu() {
 				'#title' => '',
 				'#type' => 'textfield',
 				'#default_value' => (isset($defaults['mobile']) ? $defaults['mobile'] : ''),
+				'#prefix' => '<div class="sufix">',
+				'#suffix' => '</div>'
+			);
+		$form['wa_ext'] = array(
+			'#title' => '',
+			'#type' => 'textfield',
+			'#default_value' => (isset($defaults['wa_ext']) ? $defaults['wa_ext'] : ''),
+			'#prefix' => '<div class="prefix">',
+			'#suffix' => '</div>'
+		);
+			$form['wa'] = array(
+				'#title' => '',
+				'#type' => 'textfield',
+				'#default_value' => (isset($defaults['wa']) ? $defaults['wa'] : ''),
 				'#prefix' => '<div class="sufix">',
 				'#suffix' => '</div>'
 			);
