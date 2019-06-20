@@ -120,6 +120,7 @@ function template_preprocess_esignature_set_division(&$vars) {
 			}else{
 				$pattern['{wa}'] = ($form_values['wa_ext'] ? '+' . $form_values['wa_ext'] . '' . $form_values['wa'] : $form_values['wa']);
 				$pattern['{wa_number}'] = ($form_values['wa_ext'] ? $form_values['wa_ext'] . '' . $form_values['wa'] : $form_values['wa']);
+        $pattern['{wa_number}'] = str_ireplace( ' ', '', $pattern['{wa_number}'] ); 
 			}
 			
 			if(trim($form_values['skype']) == ''){
@@ -340,6 +341,7 @@ function theme_esignature_set_item(&$vars){
         
 				$pattern['{wa}'] = ($form_values['wa_ext']  ? '+' . $form_values['wa_ext'] . '' . $form_values['wa'] : $form_values['wa']);
 				$pattern['{wa_number}'] = ($form_values['wa_ext']  ? $form_values['wa_ext'] . '' . $form_values['wa'] : $form_values['wa']);
+        $pattern['{wa_number}'] = str_ireplace( ' ', '', $pattern['{wa_number}'] ); 
 			}
 			
 			//set the empty value
@@ -381,6 +383,7 @@ function theme_esignature_set_item(&$vars){
 			}else{
 				$pattern['{wa}'] = ($form_values['wa_ext'] ? '+' . $form_values['wa_ext'] . '' . $form_values['wa'] : $form_values['wa']);
 				$pattern['{wa_number}'] = ($form_values['wa_ext'] ? $form_values['wa_ext'] . '' . $form_values['wa'] : $form_values['wa']);
+        $pattern['{wa_number}'] = str_ireplace( ' ', '', $pattern['{wa_number}'] ); 
 				unset($pattern[$form_values['wa_empty']]);
 			}
 			
