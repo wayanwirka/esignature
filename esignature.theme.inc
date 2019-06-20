@@ -119,6 +119,7 @@ function template_preprocess_esignature_set_division(&$vars) {
 				}
 			}else{
 				$pattern['{wa}'] = ($form_values['wa_ext'] ? '+' . $form_values['wa_ext'] . '' . $form_values['wa'] : $form_values['wa']);
+				$pattern['{wa_number}'] = ($form_values['wa_ext'] ? $form_values['wa_ext'] . '' . $form_values['wa'] : $form_values['wa']);
 			}
 			
 			if(trim($form_values['skype']) == ''){
@@ -338,6 +339,7 @@ function theme_esignature_set_item(&$vars){
 				$pattern['{fax}'] = ($form_values['fax_ext']  ? '+' . $form_values['fax_ext'] . '' . $form_values['fax'] : $form_values['fax']);
         
 				$pattern['{wa}'] = ($form_values['wa_ext']  ? '+' . $form_values['wa_ext'] . '' . $form_values['wa'] : $form_values['wa']);
+				$pattern['{wa_number}'] = ($form_values['wa_ext']  ? $form_values['wa_ext'] . '' . $form_values['wa'] : $form_values['wa']);
 			}
 			
 			//set the empty value
@@ -378,6 +380,7 @@ function theme_esignature_set_item(&$vars){
 				}
 			}else{
 				$pattern['{wa}'] = ($form_values['wa_ext'] ? '+' . $form_values['wa_ext'] . '' . $form_values['wa'] : $form_values['wa']);
+				$pattern['{wa_number}'] = ($form_values['wa_ext'] ? $form_values['wa_ext'] . '' . $form_values['wa'] : $form_values['wa']);
 				unset($pattern[$form_values['wa_empty']]);
 			}
 			
